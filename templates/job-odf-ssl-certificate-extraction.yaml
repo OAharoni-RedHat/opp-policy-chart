@@ -39,4 +39,4 @@ spec:
       serviceAccountName: odf-ssl-extractor-sa
   backoffLimit: 10
   activeDeadlineSeconds: 3600
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 86400
