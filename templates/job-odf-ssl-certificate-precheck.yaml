@@ -15,7 +15,6 @@ metadata:
 spec:
   backoffLimit: 10
   activeDeadlineSeconds: 7200
-  ttlSecondsAfterFinished: 86400  # 24 hours - keep job for debugging and ArgoCD visibility
   template:
     spec:
       serviceAccountName: odf-ssl-certificate-precheck
