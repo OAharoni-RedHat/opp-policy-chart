@@ -15,7 +15,7 @@ SECONDARY_CLUSTER="${SECONDARY_CLUSTER:-ocp-secondary}"
 MAX_ATTEMPTS=270  # Check 270 times (90 minutes with 20s intervals) before failing
 SLEEP_INTERVAL=20
 ARGOCD_NAMESPACE="openshift-gitops"
-# Managed clustergroup namespace: from values-global/values-hub. Only look for and force-sync this namespace.
+# Managed clustergroup namespace and short name: set by Helm from clusterGroup.managedClusterGroups / regionalDR (no hard-coded default).
 MANAGED_CLUSTER_GROUP_NAMESPACE="${MANAGED_CLUSTER_GROUP_NAMESPACE:?MANAGED_CLUSTER_GROUP_NAMESPACE must be set by the chart or environment}"
 MANAGED_CLUSTER_GROUP_NAME="${MANAGED_CLUSTER_GROUP_NAME:-${MANAGED_CLUSTER_GROUP_NAMESPACE#ramendr-starter-kit-}}"
 FORCE_SYNC_APP_NAMESPACE="${FORCE_SYNC_APP_NAMESPACE:-openshift-gitops}"
