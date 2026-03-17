@@ -16,7 +16,8 @@ MAX_ATTEMPTS=270  # Check 270 times (90 minutes with 20s intervals) before faili
 SLEEP_INTERVAL=20
 ARGOCD_NAMESPACE="openshift-gitops"
 # Managed clustergroup namespace: from values-global/values-hub. Only look for and force-sync this namespace.
-MANAGED_CLUSTER_GROUP_NAMESPACE="${MANAGED_CLUSTER_GROUP_NAMESPACE:-ramendr-starter-kit-resilient}"
+MANAGED_CLUSTER_GROUP_NAMESPACE="${MANAGED_CLUSTER_GROUP_NAMESPACE:?MANAGED_CLUSTER_GROUP_NAMESPACE must be set by the chart or environment}"
+MANAGED_CLUSTER_GROUP_NAME="${MANAGED_CLUSTER_GROUP_NAME:-${MANAGED_CLUSTER_GROUP_NAMESPACE#ramendr-starter-kit-}}"
 FORCE_SYNC_APP_NAMESPACE="${FORCE_SYNC_APP_NAMESPACE:-openshift-gitops}"
 FORCE_SYNC_APP_NAME="${FORCE_SYNC_APP_NAME:-$MANAGED_CLUSTER_GROUP_NAMESPACE}"
 FORCE_SYNC_RESOURCE_KIND="${FORCE_SYNC_RESOURCE_KIND:-Namespace}"
@@ -42,8 +43,8 @@ check_cluster_wedged() {
   case "$cluster" in
     "$PRIMARY_CLUSTER"|"$SECONDARY_CLUSTER")
       cluster_argocd_namespace="$MANAGED_CLUSTER_GROUP_NAMESPACE"
-      local cg_name="${MANAGED_CLUSTER_GROUP_NAMESPACE#ramendr-starter-kit-}"
-      cluster_argocd_instance="${cg_name}-gitops-server"
+      # Instance name = <clusterGroupName>-gitops-server; use MANAGED_CLUSTER_GROUP_NAME from chart
+      cluster_argocd_instance="${MANAGED_CLUSTER_GROUP_NAME}-gitops-server"
       ;;
     "local-cluster")
       cluster_argocd_namespace="openshift-gitops"

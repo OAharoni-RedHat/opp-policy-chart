@@ -25,6 +25,8 @@ spec:
           value: {{ include "opp.secondaryClusterName" . | quote }}
         - name: MANAGED_CLUSTER_GROUP_NAMESPACE
           value: {{ include "opp.managedClusterGroupNamespace" . | quote }}
+        - name: MANAGED_CLUSTER_GROUP_NAME
+          value: {{ include "opp.managedClusterGroupName" . | quote }}
         - name: FORCE_SYNC_APP_NAMESPACE
           value: {{ .Values.argocdHealthMonitor.forceSyncAppNamespace | default "openshift-gitops" | quote }}
         - name: FORCE_SYNC_APP_NAME
@@ -34,7 +36,7 @@ spec:
         - name: FORCE_SYNC_RESOURCE_KIND
           value: Namespace
         - name: FORCE_SYNC_RESOURCE_NAME
-          value: {{ include "opp.forceSyncAppName" . | quote }}
+          value: {{ include "opp.managedClusterGroupNamespace" . | quote }}
         command:
         - /bin/bash
         - -c

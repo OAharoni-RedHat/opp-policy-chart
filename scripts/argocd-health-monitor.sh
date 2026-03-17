@@ -17,8 +17,9 @@ MAX_ATTEMPTS=180  # Check 180 times (90 minutes with 30s intervals) before faili
 SLEEP_INTERVAL=30
 ARGOCD_NAMESPACE="openshift-gitops"
 MIN_MANAGED_CLUSTERS=1  # Proceed when at least this many managed clusters (excluding local-cluster)
-# Managed clustergroup namespace: from values-global/values-hub (MANAGED_CLUSTER_GROUP_NAMESPACE). Only look for and force-sync this namespace.
-MANAGED_CLUSTER_GROUP_NAMESPACE="${MANAGED_CLUSTER_GROUP_NAMESPACE:-ramendr-starter-kit-resilient}"
+# Managed clustergroup namespace and short name: set by Helm from clusterGroup.managedClusterGroups / regionalDR (no hard-coded default).
+MANAGED_CLUSTER_GROUP_NAMESPACE="${MANAGED_CLUSTER_GROUP_NAMESPACE:?MANAGED_CLUSTER_GROUP_NAMESPACE must be set by the chart or environment}"
+MANAGED_CLUSTER_GROUP_NAME="${MANAGED_CLUSTER_GROUP_NAME:-${MANAGED_CLUSTER_GROUP_NAMESPACE#ramendr-starter-kit-}}"
 # Force-sync: single Namespace of the managed clustergroup (FORCE_SYNC_RESOURCES set by Helm from same namespace)
 FORCE_SYNC_APP_NAMESPACE="${FORCE_SYNC_APP_NAMESPACE:-openshift-gitops}"
 FORCE_SYNC_APP_NAME="${FORCE_SYNC_APP_NAME:-$MANAGED_CLUSTER_GROUP_NAMESPACE}"
@@ -45,9 +46,8 @@ check_cluster_wedged() {
   case "$cluster" in
     "$PRIMARY_CLUSTER"|"$SECONDARY_CLUSTER")
       cluster_argocd_namespace="$MANAGED_CLUSTER_GROUP_NAMESPACE"
-      # Instance name = <clusterGroupName>-gitops-server (e.g. resilient-gitops-server)
-      local cg_name="${MANAGED_CLUSTER_GROUP_NAMESPACE#ramendr-starter-kit-}"
-      cluster_argocd_instance="${cg_name}-gitops-server"
+      # Instance name = <clusterGroupName>-gitops-server (e.g. resilient-gitops-server); use MANAGED_CLUSTER_GROUP_NAME from chart
+      cluster_argocd_instance="${MANAGED_CLUSTER_GROUP_NAME}-gitops-server"
       ;;
     "local-cluster")
       cluster_argocd_namespace="openshift-gitops"
