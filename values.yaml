@@ -22,6 +22,7 @@ argocdHealthMonitor:
   # Explicit override for managed clustergroup namespace (optional). When set, used as-is.
   # managedClusterGroupNamespace: ""
   forceSyncAppNamespace: openshift-gitops
-  # forceSyncAppName and FORCE_SYNC_RESOURCE_NAME are calculated the same way as managed clustergroup namespace
-  # (clusterGroup.managedClusterGroups[0].name, managedClusterGroups[0].name, etc.) via opp.forceSyncAppName in _helpers.tpl.
+  # forceSyncAppName: Argo CD Application to force-sync when wedged. Default is the short clustergroup name
+  # (e.g. "resilient") from clusterGroup.managedClusterGroups / regionalDR; set explicitly if your Application name differs.
+  # forceSyncResourceKind / FORCE_SYNC_RESOURCE_NAME target the managed clustergroup namespace (ramendr-starter-kit-<name>).
   forceSyncResourceKind: Namespace

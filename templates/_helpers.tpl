@@ -35,9 +35,26 @@
 {{- end -}}
 {{- end -}}
 
-{{/* Force-sync Application name: same derivation as managed clustergroup namespace (clusterGroup.managedClusterGroups, etc.). */}}
+{{/* Short managed clustergroup name (no ramendr-starter-kit- prefix). Same precedence as opp.managedClusterGroupNamespace. */}}
+{{- define "opp.managedClusterGroupName" -}}
+{{- $explicitNs := .Values.argocdHealthMonitor.managedClusterGroupNamespace | default "" -}}
+{{- if $explicitNs }}{{ trimPrefix "ramendr-starter-kit-" $explicitNs | default $explicitNs }}{{- else -}}
+  {{- $cg := .Values.clusterGroup | default dict -}}
+  {{- $mcgRawChart := $cg.managedClusterGroups | default list -}}
+  {{- $mcgRawTop := .Values.managedClusterGroups | default list -}}
+  {{- $mcgFromChart := dict -}}
+  {{- if gt (len $mcgRawChart) 0 }}{{ if eq (kindOf $mcgRawChart) "slice" }}{{ $mcgFromChart = first $mcgRawChart }}{{ else }}{{ $mcgFromChart = first (values $mcgRawChart) }}{{ end }}{{ end -}}
+  {{- $mcgTop := dict -}}
+  {{- if gt (len $mcgRawTop) 0 }}{{ if eq (kindOf $mcgRawTop) "slice" }}{{ $mcgTop = first $mcgRawTop }}{{ else }}{{ $mcgTop = first (values $mcgRawTop) }}{{ end }}{{ end -}}
+  {{- $firstDR := index (.Values.regionalDR | default list) 0 | default dict -}}
+  {{- .Values.managedClusterGroupName | default $mcgFromChart.name | default $mcgTop.name | default $firstDR.name -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Force-sync Application name: short clustergroup name (VP names the Argo CD Application after the group, e.g. "resilient"). */}}
 {{- define "opp.forceSyncAppName" -}}
-{{- include "opp.managedClusterGroupNamespace" . -}}
+{{- $explicit := .Values.argocdHealthMonitor.forceSyncAppName | default "" -}}
+{{- if $explicit }}{{ $explicit }}{{- else }}{{ include "opp.managedClusterGroupName" . }}{{- end -}}
 {{- end -}}
 
 {{/* JSON array of force-sync resources: only the managed clustergroup namespace (single Namespace). */}}
